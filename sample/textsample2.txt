@@ -1,1 +1,25 @@
+// About Computer
+
+A computer is an electronic device that processes data according to a set of instructions called a program. It performs calculations and 
+manipulates information at high speed. Key components include a central processing unit (CPU) for executing instructions, memory for storing data, 
+and input/output devices for interaction. Computers are versatile tools used for a vast array of tasks, from communication and entertainment to 
+complex scientific research and automation. Their functionality relies on the interplay of hardware and software.
+
+// About Machine learning
+
+Machine learning (ML) is like teaching computers to learn from data without explicitly programming them for every single task. Instead of 
+writing specific rules, you feed the computer lots of examples, and it figures out the patterns. Think of it like a child learning to recognize 
+a cat by seeing many pictures of cats. ML algorithms are the sets of instructions that enable this learning process.
+
+There are different types of ML, like supervised learning where you provide labeled data (e.g., pictures of cats labeled "cat"). The algorithm 
+then learns to predict the label for new, unseen data. Another type is unsupervised learning, where the data isn't labeled, and the algorithm 
+tries to find hidden structures or groupings on its own. Imagine sorting a pile of mixed candies into different types without knowing the names 
+of the candies beforehand.
+
+Reinforcement learning is like training a dog with rewards and punishments to perform certain actions. The ML model learns through trial and 
+error, receiving feedback on its actions. ML is used in many everyday applications, such as recommending movies on Netflix or filtering spam 
+emails. It powers facial recognition on your phone and helps self-driving cars navigate.
+
+The more data an ML model has, the better it generally becomes at making predictions or decisions. Building an ML model involves collecting 
+data, preparing it, choosing an appropriate algorithm, training the model, and evaluating its performance. It's an iterative process, often requiring adjustments and fine-tuning to achieve the desired results.The goal of ML is to create models that can generalize well to new, unseen data, not just memorize the training data.
 
