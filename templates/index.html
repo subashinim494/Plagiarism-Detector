@@ -170,8 +170,13 @@
             <button type="submit">Check for Plagiarism</button>
         </form>
         {% if result %}
-        <div class="result">{{ result }}</div>
+            <div class="result">{{ result }}</div>
         {% endif %}
+
+<!--         {% if input_text %}
+            <h4>Extracted/Entered Text:</h4>
+            <pre>{{ input_text }}</pre>
+        {% endif %} -->
     </div>
 
     <script>
