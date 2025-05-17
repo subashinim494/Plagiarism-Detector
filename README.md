@@ -22,14 +22,9 @@ A machine learning web application that detects plagiarism in text using Natural
 ---
 
 ## 🖼️ Screenshots
-
-### 🔍 Home Page
-![Home Page](screenshots/homepage.png)
-
-### 📄 Prediction Output
-![Prediction](Screenshots/Screenshot 2025-05-17 195539.png)
-![Prediction](Screenshots/Screenshot 2025-05-17 195626.png)
-![Prediction](Screenshots/Screenshot 2025-05-17 195648.png)
+![](Screenshots/Screenshot 2025-05-17 195539.png)
+![](Screenshots/Screenshot 2025-05-17 195626.png)
+![](Screenshots/Screenshot 2025-05-17 195648.png)
 
 ---
 
