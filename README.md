@@ -16,7 +16,7 @@ A machine learning web application that detects plagiarism in text using Natural
 
 ## 🌐 Live Demo
 
-👉 [Click here to view the deployed app](https://your-app-name.herokuapp.com/)  
+👉 [Click here to view the deployed app](https://plagiarism-detector-kn5a.onrender.com/)
 > *(Replace the above link with your actual Heroku/Render/any other deployment URL)*
 
 ---
@@ -40,5 +40,19 @@ A machine learning web application that detects plagiarism in text using Natural
 
 ## 🗂️ Project Structure
 
+Plagiarism-Detector/
+│
+├── app.py # Flask application
+├── modelcode.py # Model training script (SVM)
+├── model.pkl # Trained SVM model
+├── tfidf_vectorizer.pkl # Saved TF-IDF vectorizer
+├── cleaned_plagiarism_dataset.csv
+├── templates/
+│ └── index.html # Web UI
+├── screenshots/
+│ ├── homepage.png # UI screenshot
+│ └── prediction.png # Result screenshot
+├── requirements.txt # Project dependencies
+├── Procfile # For deployment on Heroku
+└── README.md # Project documentation
 
-- Project is deployed at [https://plagiarism-detector-kn5a.onrender.com/](https://plagiarism-detector-kn5a.onrender.com/)
