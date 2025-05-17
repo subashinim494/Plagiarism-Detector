@@ -1,57 +1,80 @@
-# Import necessary libraries
+import nltk
+nltk.download("popular")
+from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
+import string
+from nltk.corpus import stopwords
+import joblib
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report,confusion_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+data = pd.read_csv("/content/expanded_plagiarism_dataset.csv")
+data.head()
+
+data = pd.read_csv("dataset.csv")
+data.head()
+
+def preprocess_text(text):
+    # Remove punctuation
+    text = text.translate(str.maketrans("", "", string.punctuation))
+    # Convert to lowercase
+    text = text.lower()
+    # Remove stop words
+    stop_words = set(stopwords.words("english"))
+    text = " ".join(word for word in text.split() if word not in stop_words)
+    return text
+data["source_text"] = data["source_text"].apply(preprocess_text)
+data["plagiarized_text"] = data["plagiarized_text"].apply(preprocess_text)
+
+tfidf_vectorizer = TfidfVectorizer()
+X = tfidf_vectorizer.fit_transform(data["source_text"] + " " + data["plagiarized_text"])
+
+y = data["label"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
 from sklearn.svm import SVC
+
+# Instantiate the model
+model = SVC(kernel='linear', random_state=42)
+# Fit the model
+model.fit(X_train, y_train)
+# Make predictions
+y_pred = model.predict(X_test)
+# Calculate accuracy
+accuracy = accuracy_score(y_test, y_pred)
+# Generate classification report
+classification_rep = classification_report(y_test, y_pred)
+# Generate confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+# Print results
+print("Accuracy:", accuracy)
+print("Classification Report:")
+print(classification_rep)
+print("Confusion Matrix:")
+print(cm)
+
 import pickle
 
-# Example Data Preparation
-# (In your real use case, you would replace this with your actual dataset)
-data = {
-    'text': [
-        "This is a good product",
-        "I hated the experience",
-        "Fantastic service and friendly staff",
-        "Worst service ever",
-        "Loved the ambiance and food",
-        "Not worth the money",
-    ],
-    'label': [1, 0, 1, 0, 1, 0]  # 1 = Positive, 0 = Negative
-}
+pickle.dump(model,open("model.pkl",'wb'))
+pickle.dump(tfidf_vectorizer, open('tfidf_vectorizer.pkl','wb'))
 
-df = pd.DataFrame(data)
+model = pickle.load(open('model.pkl','rb'))
+tfidf_vectorizer = pickle.load(open('tfidf_vectorizer.pkl','rb'))
 
-# Split into training and testing
-X_train, X_test, y_train, y_test = train_test_split(df['text'], df['label'], test_size=0.2, random_state=42)
+def detect(input_text):
+    vectorized_text = tfidf_vectorizer.transform([input_text])
+    result = model.predict(vectorized_text)
+    return "Plagiarim Detected" if result[0] == 1 else "No Plagiarism"
 
-# Step 1: TF-IDF Vectorization
-vectorizer = TfidfVectorizer()
-X_train_tfidf = vectorizer.fit_transform(X_train)
+input_text = 'Researchers have discovered a new species of butterfly in the Amazon rainforest.'
+detect(input_text)
 
-# Step 2: Train SVM Model
-model = SVC(probability=True)  # (probability=True if you want predict_proba, optional)
-model.fit(X_train_tfidf, y_train)
+input_text = 'Playing musical instruments enhances creativity.'
+detect(input_text)
 
-# Step 3: Save the TF-IDF Vectorizer
-with open('tfidf_vectorizer.pkl', 'wb') as f:
-    pickle.dump(vectorizer, f)
+import sklearn
+sklearn.__version__
 
-# Step 4: Save the Trained SVM Model
-with open('model.pkl', 'wb') as f:
-    pickle.dump(model, f)
-
-# ------------
-
-# Step 5: (Later) Load the Saved Model and Vectorizer
-with open('tfidf_vectorizer.pkl', 'rb') as f:
-    loaded_vectorizer = pickle.load(f)
-
-with open('model.pkl', 'rb') as f:
-    loaded_model = pickle.load(f)
-
-# Step 6: Make a Prediction
-sample_text = ["The food was amazing"]
-sample_text_tfidf = loaded_vectorizer.transform(sample_text)
-prediction = loaded_model.predict(sample_text_tfidf)
-
-print("Predicted label:", prediction[0])
