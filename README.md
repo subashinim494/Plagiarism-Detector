@@ -1,4 +1,4 @@
-# 📄 Plagiarism Detector
+# 📄 Plagiarism Detector using 
 
 A machine learning web application that detects plagiarism in text using Natural Language Processing (NLP). Built using Python, Flask, and scikit-learn, this app allows users to input text and receive an evaluation of potential plagiarism against a dataset.
 
@@ -22,9 +22,11 @@ A machine learning web application that detects plagiarism in text using Natural
 ---
 
 ## 🖼️ Screenshots
-![](Screenshots/Screenshot 2025-05-17 195539.png)
-![](Screenshots/Screenshot 2025-05-17 195626.png)
-![](Screenshots/Screenshot 2025-05-17 195648.png)
+![Home Page](Screenshots/Screenshot%202025-05-17%20195539.png)
+ 
+![Result 1](Screenshots/Screenshot%202025-05-17%20195626.png)
+
+![Result 2](Screenshots/Screenshot%202025-05-17%20195648.png)
 
 ---
 
