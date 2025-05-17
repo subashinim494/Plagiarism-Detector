@@ -58,4 +58,48 @@ Plagiarism-Detector/
 ├── Procfile # For deployment on Heroku
 └── README.md # Project documentation
  ```
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/SuhainaFathimaM/Plagiarism-Detector.git
+cd Plagiarism-Detector
+```
+### 2. (Optional) Create a virtual environment
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+```
+
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+### 4. Run the application
+```bash
+python app.py
+Then open your browser and go to: http://127.0.0.1:5000/
+```
+--- 
+## 📊 Dataset
+The dataset used for training and prediction is cleaned_plagiarism_dataset.csv, which includes preprocessed textual data with plagiarism labels.
+
+---
+## 🧠 Model Training
+To retrain the SVM model and generate the required .pkl files:
+
+```bash
+
+python modelcode.py
+```
+This will output:
+
+- model.pkl (SVM model)
+
+- tfidf_vectorizer.pkl (TF-IDF transformer)
+
+
 
