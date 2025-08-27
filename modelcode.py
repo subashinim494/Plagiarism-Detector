@@ -12,16 +12,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
 import pickle
 
-# -------------------------
- Load dataset
-# -------------------------
+
 
 data = pd.read_csv("dataset.csv")  
 print(data.head())
 
-# -------------------------
- Preprocess text
-# -------------------------
+
 
 def preprocess_text(text):
     # Remove punctuation
@@ -36,32 +32,22 @@ def preprocess_text(text):
 data["source_text"] = data["source_text"].astype(str).apply(preprocess_text)
 data["plagiarized_text"] = data["plagiarized_text"].astype(str).apply(preprocess_text)
 
-# -------------------------
- Feature extraction
-# -------------------------
-# ❌ Earlier mistake: you joined both columns blindly
-# ✅ Fix: join source + plagiarized text row by row, so model learns pair relation
+
 combined_text = data["source_text"] + " " + data["plagiarized_text"]
 tfidf_vectorizer = TfidfVectorizer()
 X = tfidf_vectorizer.fit_transform(combined_text)
 
 y = data["label"]
 
-# -------------------------
- Train-test split
-# -------------------------
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# -------------------------
- Train SVM classifier
-# -------------------------
+
 
 model = SVC(kernel="linear", random_state=42, probability=True) 
 model.fit(X_train, y_train)
 
-# -------------------------
-Evaluate model
-# -------------------------
+
 
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
@@ -72,23 +58,15 @@ print("Accuracy:", accuracy)
 print("Classification Report:\n", classification_rep)
 print("Confusion Matrix:\n", cm)
 
-# -------------------------
- Save model and vectorizer
-# -------------------------
+
 
 pickle.dump(model, open("model.pkl", "wb"))
 pickle.dump(tfidf_vectorizer, open("tfidf_vectorizer.pkl", "wb"))
 
-# -------------------------
- Reload for detection
-# -------------------------
 
 model = pickle.load(open("model.pkl", "rb"))
 tfidf_vectorizer = pickle.load(open("tfidf_vectorizer.pkl", "rb"))
 
-# -------------------------
- Detection function
-# -------------------------
 
 def detect(input_text1, input_text2):
     """Check if suspect text is plagiarized from source text"""
@@ -99,11 +77,9 @@ def detect(input_text1, input_text2):
     result = model.predict(vectorized)
     return "Plagiarism Detected" if result[0] == 1 else "No Plagiarism"
 
-# -------------------------
-  Example test
-# -------------------------
+
 
 source = "Researchers have discovered a new species of butterfly in the Amazon rainforest."
 suspect = "A new species of butterfly was discovered in the Amazon rainforest by researchers."
 
-print(detect(source, suspect))  # ✅ Expect: Plagiarism Detected
+print(detect(source, suspect))  
