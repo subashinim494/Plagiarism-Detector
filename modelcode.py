@@ -1,5 +1,5 @@
 import nltk
-nltk.download("popular")
+nltk.download("stopwords") 
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 import string
@@ -7,74 +7,103 @@ from nltk.corpus import stopwords
 import joblib
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report,confusion_matrix
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.svm import SVC
+import pickle
 
-data = pd.read_csv("/content/expanded_plagiarism_dataset.csv")
-data.head()
+# -------------------------
+ Load dataset
+# -------------------------
 
-data = pd.read_csv("dataset.csv")
-data.head()
+data = pd.read_csv("dataset.csv")  
+print(data.head())
+
+# -------------------------
+ Preprocess text
+# -------------------------
 
 def preprocess_text(text):
     # Remove punctuation
     text = text.translate(str.maketrans("", "", string.punctuation))
     # Convert to lowercase
     text = text.lower()
-    # Remove stop words
+    # Remove stopwords
     stop_words = set(stopwords.words("english"))
     text = " ".join(word for word in text.split() if word not in stop_words)
     return text
-data["source_text"] = data["source_text"].apply(preprocess_text)
-data["plagiarized_text"] = data["plagiarized_text"].apply(preprocess_text)
 
+data["source_text"] = data["source_text"].astype(str).apply(preprocess_text)
+data["plagiarized_text"] = data["plagiarized_text"].astype(str).apply(preprocess_text)
+
+# -------------------------
+ Feature extraction
+# -------------------------
+# ❌ Earlier mistake: you joined both columns blindly
+# ✅ Fix: join source + plagiarized text row by row, so model learns pair relation
+combined_text = data["source_text"] + " " + data["plagiarized_text"]
 tfidf_vectorizer = TfidfVectorizer()
-X = tfidf_vectorizer.fit_transform(data["source_text"] + " " + data["plagiarized_text"])
+X = tfidf_vectorizer.fit_transform(combined_text)
 
 y = data["label"]
 
+# -------------------------
+ Train-test split
+# -------------------------
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-from sklearn.svm import SVC
+# -------------------------
+ Train SVM classifier
+# -------------------------
 
-# Instantiate the model
-model = SVC(kernel='linear', random_state=42)
-# Fit the model
+model = SVC(kernel="linear", random_state=42, probability=True) 
 model.fit(X_train, y_train)
-# Make predictions
+
+# -------------------------
+Evaluate model
+# -------------------------
+
 y_pred = model.predict(X_test)
-# Calculate accuracy
 accuracy = accuracy_score(y_test, y_pred)
-# Generate classification report
 classification_rep = classification_report(y_test, y_pred)
-# Generate confusion matrix
 cm = confusion_matrix(y_test, y_pred)
-# Print results
+
 print("Accuracy:", accuracy)
-print("Classification Report:")
-print(classification_rep)
-print("Confusion Matrix:")
-print(cm)
+print("Classification Report:\n", classification_rep)
+print("Confusion Matrix:\n", cm)
 
-import pickle
+# -------------------------
+ Save model and vectorizer
+# -------------------------
 
-pickle.dump(model,open("model.pkl",'wb'))
-pickle.dump(tfidf_vectorizer, open('tfidf_vectorizer.pkl','wb'))
+pickle.dump(model, open("model.pkl", "wb"))
+pickle.dump(tfidf_vectorizer, open("tfidf_vectorizer.pkl", "wb"))
 
-model = pickle.load(open('model.pkl','rb'))
-tfidf_vectorizer = pickle.load(open('tfidf_vectorizer.pkl','rb'))
+# -------------------------
+ Reload for detection
+# -------------------------
 
-def detect(input_text):
-    vectorized_text = tfidf_vectorizer.transform([input_text])
-    result = model.predict(vectorized_text)
-    return "Plagiarim Detected" if result[0] == 1 else "No Plagiarism"
+model = pickle.load(open("model.pkl", "rb"))
+tfidf_vectorizer = pickle.load(open("tfidf_vectorizer.pkl", "rb"))
 
-input_text = 'Researchers have discovered a new species of butterfly in the Amazon rainforest.'
-detect(input_text)
+# -------------------------
+ Detection function
+# -------------------------
 
-input_text = 'Playing musical instruments enhances creativity.'
-detect(input_text)
+def detect(input_text1, input_text2):
+    """Check if suspect text is plagiarized from source text"""
+    input_text1 = preprocess_text(input_text1)
+    input_text2 = preprocess_text(input_text2)
+    combined = input_text1 + " " + input_text2
+    vectorized = tfidf_vectorizer.transform([combined])
+    result = model.predict(vectorized)
+    return "Plagiarism Detected" if result[0] == 1 else "No Plagiarism"
 
-import sklearn
-sklearn.__version__
+# -------------------------
+  Example test
+# -------------------------
 
+source = "Researchers have discovered a new species of butterfly in the Amazon rainforest."
+suspect = "A new species of butterfly was discovered in the Amazon rainforest by researchers."
+
+print(detect(source, suspect))  # ✅ Expect: Plagiarism Detected
